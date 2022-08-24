@@ -1,0 +1,109 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+{% for kvm in kvms %}
+    {% for colname in kvm.column_set.all  %}
+        <p>{{colname}}</p>
+    {% endfor %}
+{% endfor %}
+{% if user.is_authenticated %}
+
+
+
+<div class="container d-flex mt-5" style="width: 100%;">
+    <div class="col">
+        <h1 class="text-center">My VMs</h1>
+        <table class="table table-striped mt-5">
+            <thead>
+                <tr>
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th class="text-center" scope="col">name</th>
+                    <th class="text-center" scope="col">vcpus</th>
+                    <th class="text-center" scope="col">disk</th>
+                    <th class="text-center" scope="col">memory</th>
+                    <th class="text-center" scope="col">networks</th>
+                    <th class="text-center" scope="col">storage</th>
+                    <th class="text-center" scope="col">iso</th>
+                    <th class="text-center" scope="col">description</th>
+                    <th class="text-center" scope="col">hdd_size</th>
+                    <th class="text-center" scope="col">mac</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for kvm in kvms %}
+                {% if user.id == kvm.kvmcreator or user.is_staff %}
+                <tr>
+                    {% comment %} <th scope="row">{{forloop.counter}}</th> {% endcomment %}
+                    <td class="text-center">{{kvm.name}}</td>
+                    <td class="text-center">{{kvm.vcpus}}</td>
+                    <td class="text-center">{{kvm.disk}}</td>
+                    <td class="text-center">{{kvm.memory}}</td>
+                    <td class="text-center">{{kvm.networks}}</td>
+                    <td class="text-center">{{kvm.storage}}</td>
+                    <td class="text-center">{{kvm.iso}}</td>
+                    <td class="text-center">{{kvm.description}}</td>
+                    <td class="text-center">{{kvm.hdd_size}}</td>
+                    <td class="text-center">{{kvm.mac}}</td>
+                    <td><a href="{% url 'kvm:Kvm_delete_page' kvm.id %}"><span class="material-icons" style='background-color:red; color:white;'>clear</span></a></td>
+                    <td><a href="{% url 'kvm:Kvm_start' kvm.id %}" class="start_vm"><span class="material-icons" style='background-color:green; color:white;'>start</span></a></td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'kvm:Kvm_create' %}" class="d-block btn btn-primary btn-lg my-5">Add New</a>
+        </div>
+    </div>
+
+</div>
+<div  class="hidden"  id="preloader" style="
+    width: 30px;
+    height: 30px;
+">
+    <div id="status">&nbsp;</div>
+  </div>
+ 
+{% else %}
+<h3>your not logged in you need to login</h3>
+{% endif %}
+{% endblock content %}
+{% block javascript %}
+<script>
+    /*
+        On submiting the form, send the POST ajax
+        request to server and after successfull submission
+        display the object.
+    */
+    $(".start_vm").click(function (e) {
+        // preventing from page reload and default actions
+        e.preventDefault();
+        // serialize the data for sending the form data.
+        var serializedData = $(this).serialize();
+        var urld = $(this).data("url")
+        // make POST ajax call
+        $.ajax({
+            type: 'get',
+            url: urld,
+            success: function (response) {
+                console.log(response)
+                swal ( "Good" ,  response.instance ,  "success" )
+
+
+            },
+            error: function (response) {
+                // alert the error if any error occured
+                console.log(response)
+                swal ( "Oops" ,  response.instance ,  "error" )
+
+
+            }
+        })
+    })
+</script>
+{% endblock javascript %}

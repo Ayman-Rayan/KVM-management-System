@@ -1,0 +1,66 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+{% for network in network_list %}
+    {% for colname in network.column_set.all  %}
+        <p>{{colname}}</p>
+    {% endfor %}
+{% endfor %}
+{% if user.is_authenticated %}
+
+<div class="container d-flex mt-5" style="width: 70%;">
+    <div class="col">
+        <h1 class="text-center">My Networks</h1>
+        <table class="table table-striped mt-5">
+            <thead>
+                <tr>
+                    {% comment %} <th>#</th> {% endcomment %}
+                    <th class="text-center" scope="col">title</th>
+                    <th class="text-center" scope="col">subnet</th>
+                    <th class="text-center" scope="col">forward</th>
+                    <th class="text-center" scope="col">bridge_name</th>
+
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for network in network_list %}
+                <tr>
+                    {% comment %} <th scope="row">{{forloop.counter}}</th> {% endcomment %}
+                    <td class="text-center">{{network.title}}</td>
+                    <td class="text-center">{{network.subnet}}</td>
+                    <td class="text-center">{{network.forward}}</td>
+                    <td class="text-center">{{network.bridge_name}}</td>
+                    {% if user.is_staff %}
+                    <td><a href="{% url 'networks:network_update' network.id %} "><span class="material-icons md-18" style='background-color:green; color:white;'>edit</span></a></td>
+                    <td><a href="{% url 'networks:network_delete' network.id %}"><span class="material-icons" style='background-color:red; color:white;'>clear</span></a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'networks:network_create' %}" class="d-block btn btn-primary btn-lg my-5">Add New</a>
+        </div>
+    </div>
+
+</div>
+{% else %}
+<form>
+    <fieldset><legend> virtualisation</legend>
+    <p>la virtualisations est la creation d'une version virtuelle plutot que réelle de quelque chose comme un systemed'exploitation, un serveur ou autres</p>
+    </fieldset>
+    <fieldset><legend> hyperviseur</legend>
+    <p>un hypervisuer est tout simplement un logiciel que permet de creer et d'excuter des machines virtuelles, il traite principalement les ressources telles que le processeur, la memoire de stockages ...</p>
+    </fieldset>
+    <fieldset><legend> kvm</legend>
+    <p>abréviation de kernel-based virtual machine, KVM donne la possibilité de transformez linux a un hyperviseur qui permet a la machine d'executer plusieurs machines virtuelles isolées appelées invites.</p>
+    </fieldset>
+
+</form>
+{% endif %}
+{% endblock content %}
